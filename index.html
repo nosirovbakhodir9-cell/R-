@@ -56,11 +56,16 @@ h1{font-size:44px;line-height:1.05;margin:8px 0 6px;font-weight:700;letter-spaci
 .opt:last-child:nth-child(odd){grid-column:span 2}
 .info{display:flex;justify-content:space-between;color:var(--mute);font-size:14px;margin:-12px 0 8px}
 .tm{height:6px;border-radius:4px;background:var(--soft);overflow:hidden;margin-bottom:16px}.tm i{display:block;height:100%;width:100%;background:var(--blue)}.tm.low i{background:var(--bad)}
-.tg{margin:-8px 0 16px;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:8px 16px;font-size:15px}
+.tg{margin:-8px 8px 16px 0;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:8px 16px;font-size:15px}
 .lv small i{font-style:normal;display:block;margin-top:2px;opacity:.85}
 .rk{display:flex;gap:14px;align-items:center;background:var(--blue);color:var(--onblue);border-radius:20px;padding:16px;margin-bottom:14px}.rb{flex:none;width:64px;height:64px;border-radius:16px;background:var(--onblue);color:var(--blue);display:grid;place-items:center;font-size:28px;font-weight:700}.ri{flex:1}.ri b{display:block;margin-bottom:8px}.ri .bar{height:8px;background:rgba(128,128,128,.35);margin-bottom:6px}.ri .bar i{background:var(--onblue)}.ri small{opacity:.9}.cf{font-style:normal;font-size:12px;background:var(--soft);color:var(--blue);border-radius:6px;padding:2px 6px;margin-left:6px;font-weight:500}
 .acc{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:14px}.ah{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}.ah b:last-child{font-size:22px;color:var(--blue)}.acc .bar{height:10px}
-.tabs{display:flex;gap:6px;background:var(--soft);padding:4px;border-radius:14px;margin-bottom:12px}.tab{flex:1;padding:10px;border-radius:11px;font-weight:500;font-size:16px;color:var(--mute)}.tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.18)}.hint{color:var(--mute);font-size:16px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--soft);padding:4px;border-radius:14px;margin-bottom:12px}.tab{flex:1;padding:10px;border-radius:11px;font-weight:500;font-size:16px;color:var(--mute)}.tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.18)}.hint{color:var(--mute);font-size:16px}
+.tg{font-size:20px}.tg.off{opacity:.4}
+.q .big.p{font-size:clamp(22px,6.5vw,32px);line-height:1.25}.opts.ph .opt{font-size:clamp(15px,4.2vw,18px);padding:14px 8px}.tab{padding:10px 4px;font-size:15px}
+.tab:last-child:nth-child(odd){grid-column:span 2}
+.ov{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:12px}.ov summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px}.ov summary::-webkit-details-marker{display:none}.rb2{flex:none;width:36px;height:36px;border-radius:10px;background:var(--blue);color:var(--onblue);display:grid;place-items:center;font-size:15px;font-weight:700}.ovt{flex:1;font-size:14px;line-height:1.25}.ovt b{display:block;font-weight:500}.ovt small,.dis{color:var(--mute);font-size:12px}.ovc{color:var(--mute);font-size:12px}.ovr{display:flex;align-items:center;gap:8px;font-size:12px;margin-top:7px}.ovr span{width:78px;color:var(--mute)}.ovr .bar{height:6px}.ovr b{width:34px;text-align:right;font-weight:500}.dis{display:block;margin-top:10px}
+.stinfo{margin:-4px 0 14px;font-size:14px;line-height:1.4;color:var(--mute);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.tg.sk{font-size:16px;font-weight:500}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -108,16 +113,37 @@ function rank(){var d=done(),r=cur(),nx=RK[RK.indexOf(r)+1];
 var h='<div class="rk"><div class="rb">'+r.n+'</div><div class="ri"><b>Darajangiz: '+r.t+'</b>';
 if(nx){h+='<div class="bar"><i style="width:'+((d-r.need)/(nx.need-r.need)*100)+'%"></i></div><small>'+nx.n+' ga yana '+(nx.need-d)+' bosqich qoldi</small>'}else h+='<small>Eng yuqori daraja!</small>';
 return h+'</div></div>'}
+function dnum(){var d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)}
+function stState(){var s=P.st,t=dnum();if(!s||s.last==null)return{k:"new",n:0};var g=t-s.last;if(g<=0)return{k:"today",n:s.n};if(g===1)return{k:"keep",n:s.n};if(g<=4)return{k:"frozen",n:s.n,g:g};return{k:"lost",n:0}}
+function markDay(){var s=P.st||(P.st={n:0,last:null,best:0}),t=dnum();if(s.last===t)return;var g=s.last==null?99:t-s.last;s.n=(g>=1&&g<=4)?s.n+1:1;s.last=t;if(s.n>(s.best||0))s.best=s.n;save()}
+function stPill(){var x=stState();return '<button class="tg sk" id="sk" aria-label="Seriya">'+(x.k==="frozen"?"❄ ":"🔥 ")+x.n+'</button>'}
+function stInfo(){var x=stState(),b=P.st&&P.st.best?" Eng yaxshi natija: "+P.st.best+" kun.":"";
+if(x.k==="new")return "Bugun mashq qilib kunlik seriyani boshlang!";
+if(x.k==="today")return "🔥 "+x.n+" kunlik seriya! Bugungi mashq bajarildi."+b;
+if(x.k==="keep")return "🔥 "+x.n+" kunlik seriya. Uzilmasligi uchun bugun mashq qiling."+b;
+if(x.k==="frozen"){var m=x.g-1,left=3-m;return "❄ Seriya muzlatilgan ("+x.n+" kun). "+m+" kun o‘tkazib yubordingiz. "+(left>0?"Yana "+left+" kun muzlatish qoldi.":"Bugun oxirgi kun, mashq qilmasangiz seriya o‘chadi.")+" Bugun mashq qilsangiz seriya davom etadi."+b}
+return "Seriya uzildi (3 kundan ko‘p o‘tkazib yuborildi). Bugun mashq qilib yangidan boshlang."+b}
+function overall(){
+var A=[["Raqamlar",P,LVN.length],["Fe‘llar",P.v,LVV.length],["Gaplar",P.ph,LVP.length],["Padejlar",P.cs,LVG.length],["Olmoshlar",P.pn,LVR.length],["Birikmalar",P.cb,LVB.length]];
+var sc=A.map(function(x){var st=(x[1]&&x[1].stars)||{},ac=(x[1]&&x[1].acc)||{},c=0;for(var i=0;i<x[2];i++)if(st[i])c+=ac[i]!=null?ac[i]/100:.6;return c/x[2]});
+var avg=sc.reduce(function(a,b){return a+b},0)/6,mn=Math.min.apply(null,sc),p=Math.round((.7*avg+.3*mn)*100);
+var T=[[88,"C1","Ilg‘or"],[70,"B2","O‘rta-yuqori"],[50,"B1","O‘rta"],[30,"A2","Elementar"],[10,"A1","Boshlang‘ich"],[0,"A0","Boshlovchi"]];
+var r=T.filter(function(t){return p>=t[0]})[0];
+var h='<details class="ov"><summary><div class="rb2">'+r[1]+'</div><div class="ovt"><b>Umumiy daraja: '+r[2]+'</b><small>'+p+'% · 6 bo‘lim bo‘yicha</small></div><span class="ovc">▾</span></summary><div style="height:4px"></div>';
+A.forEach(function(x,i){var v=Math.round(sc[i]*100);h+='<div class="ovr"><span>'+x[0]+'</span><div class="bar"><i style="width:'+v+'%"></i></div><b>'+v+'%</b></div>'});
+return h+'<small class="dis">Rasmiy test emas, taxminiy ko‘rsatkich.</small></details>'}
 function accCard(){var a=S().all?Math.round(S().ok/S().all*100):null;return '<div class="acc"><div class="ah"><b>Umumiy aniqlik</b><b>'+(a===null?'—':a+'%')+'</b></div><div class="bar"><i style="width:'+(a||0)+'%"></i></div></div>'}
 function stars(k){var v=S().stars[k]||0;return v?"★".repeat(v)+"☆".repeat(3-v):""}
 function home(){
 clearInterval(iv);
-var h=tabs()+'<h1>'+(MODE==="num"?"Числа":"Глаголы")+'</h1><p class="sub">'+(MODE==="num"?"Rus raqamlarini":"Rus fe‘llarini")+' '+LV.length+' bosqichda o‘rganing. Xato qilgan yoki ulgurmagan savollaringiz qayta so‘raladi.</p>'+rank()+accCard()+'<button class="tg" id="tg">⏱ Taymer: '+(P.timer?'yoqilgan':'o‘chirilgan')+'</button>';
+var h=tabs()+'<h1>'+({num:"Числа",verb:"Глаголы",phr:"Фразы",gen:"Падежи",pro:"Местоимения",cmb:"Словосочетания"})[MODE]+'</h1><p class="sub">'+({num:"Rus raqamlarini",verb:"Rus fe‘llarini",phr:"Kundalik gaplarni",gen:"Rus tilida padejlarni",pro:"Rus olmoshlarini",cmb:"Rus so‘z birikmalarini"})[MODE]+' '+LV.length+' bosqichda o‘rganing. Xato qilgan yoki ulgurmagan savollaringiz qayta so‘raladi.</p>'+rank()+accCard()+overall()+'<button class="tg'+(P.timer?'':' off')+'" id="tg" aria-label="Taymer">⏱</button><button class="tg" id="sg" aria-label="Ovoz">'+(P.sound===false?'🔇':'🔊')+'</button>'+stPill()+'<div class="stinfo" id="stinfo" hidden></div>';
 LV.forEach(function(l,i){var open=i<S().unlocked;
 h+='<button class="lv" data-i="'+i+'"'+(open?'':' disabled')+'><span class="badge">'+(open?(i+1):'🔒')+'</span><span><b>'+l.n+'<em class="cf">'+CF[i]+'</em></b><small>'+l.d+'<i>'+l.c+' savol · '+l.k+' variant'+(P.timer?' · '+l.t+' soniya':'')+'</i></small></span><span class="stars">'+stars(i)+(S().acc&&S().acc[i]!=null?'<small class="pc">'+S().acc[i]+'% to‘g‘ri</small>':'')+'</span></button>'});
 app.innerHTML=h;
 app.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){setMode(b.dataset.m);home()}});
 document.getElementById("tg").onclick=function(){P.timer=!P.timer;save();home()};
+document.getElementById("sk").onclick=function(){var e=document.getElementById("stinfo");e.hidden=!e.hidden;e.textContent=stInfo()};
+document.getElementById("sg").onclick=function(){P.sound=(P.sound===false);save();if(P.sound===false)try{speechSynthesis.cancel()}catch(e){}home()};
 app.querySelectorAll(".lv").forEach(function(b){b.onclick=function(){start(+b.dataset.i)}});
 }
 function start(i){
@@ -135,21 +161,22 @@ shuf(l.dl.reduce(function(a,d){return a.concat([n+d,n-d])},[])).forEach(function
 var g=0;while(c.length<l.k-1&&g++<500){var x=rn(l);if(ok(x)){set[x]=1;c.push(x)}}
 return shuf(c.concat([n]));
 }
-function say(t){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="ru-RU";u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+function say(t,f){if(P.sound===false&&!f)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="ru-RU";u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
 function ask(){
 clearInterval(iv);
 if(!G.q.length)return finish();
 var q=G.q[0],l=LV[G.i],o=opts(q.n,l,q),vw=view(q,l),w=vw.w;G.cur=q;
 var prompt=vw.p;
-var h='<div class="top"><button class="x" id="back" aria-label="Chiqish">✕</button><div class="bar"><i style="width:'+(G.done/G.total*100)+'%"></i></div></div>'+
+var h='<div class="top"><button class="x" id="back" aria-label="Chiqish">✕</button><div class="bar"><i style="width:'+(G.done/G.total*100)+'%"></i></div><button class="x" id="snd" aria-label="Ovoz">'+(P.sound===false?'🔇':'🔊')+'</button></div>'+
 '<div class="info"><span>Savol '+Math.min(G.done+1,G.total)+' / '+G.total+(q.retry?' · takror':'')+'</span><span>Xato: '+G.miss+(G.done+G.miss?' · '+Math.round(G.done/(G.done+G.miss)*100)+'%':'')+(P.timer?' · <b id="tt">'+l.t+'</b> s':'')+'</span></div>'+
 (P.timer?'<div class="tm" id="tm"><i id="tb"></i></div>':'<div style="height:10px"></div>')+
-'<p class="ask">'+vw.a+'</p><div class="q">'+prompt+'</div><div class="opts">';
+'<p class="ask">'+vw.a+'</p><div class="q">'+prompt+'</div><div class="opts'+(MODE==="phr"||MODE==="gen"||MODE==="cmb"?" ph":"")+'">';
 o.forEach(function(x){h+='<button class="opt" data-n="'+x+'">'+otxt(x,q,l)+'</button>'});
 h+='</div><div class="fb" id="fb"></div>';
 app.innerHTML=h;
 document.getElementById("back").onclick=home;
-var sp=document.getElementById("sp");if(sp){sp.onclick=function(){say(w)};say(w)}
+var sn=document.getElementById("snd");sn.onclick=function(){P.sound=(P.sound===false);save();sn.textContent=P.sound===false?"🔇":"🔊";if(P.sound===false)try{speechSynthesis.cancel()}catch(e){}};
+var sp=document.getElementById("sp");if(sp){sp.onclick=function(){say(w,1)};say(w)}
 app.querySelectorAll(".opt").forEach(function(b){b.onclick=function(){pick(b)}});
 if(P.timer){G.T=l.t;G.left=l.t;iv=setInterval(function(){
 G.left-=.1;var r=Math.max(G.left,0);
@@ -158,10 +185,10 @@ document.getElementById("tt").textContent=Math.ceil(r);
 document.getElementById("tm").className="tm"+(r/G.T<.3?" low":"");
 if(G.left<=0)pick(null)},100)}
 }
-function pick(b){
+function pick(b){markDay();
 clearInterval(iv);
-var q=G.cur,right=!!b&&+b.dataset.n===q.n,fb=document.getElementById("fb");
-app.querySelectorAll(".opt").forEach(function(x){x.disabled=true;if(+x.dataset.n===q.n)x.classList.add("ok")});
+var q=G.cur,cq=cid(q,LV[G.i]),right=!!b&&+b.dataset.n===cq,fb=document.getElementById("fb");
+app.querySelectorAll(".opt").forEach(function(x){x.disabled=true;if(+x.dataset.n===cq)x.classList.add("ok")});
 G.q.shift();
 var l=LV[G.i],ans=atxt(q,l);
 if(right){G.done++;fb.className="fb show ok";fb.innerHTML='<p><strong>To‘g‘ri!</strong> '+ans+'</p>'}
@@ -212,30 +239,146 @@ var LVV=[
 {n:"Fe‘llar ustasi",d:"Barcha 60 ta fe‘l",all:1,items:ALLI,k:8,c:20,t:25}];
 var CFV=["A1","A1","A1","A2","A2","A2","B1","B1","B2"];
 var RKV=[{n:"A0",t:"Boshlovchi (A0)",need:0},{n:"A1",t:"Boshlang‘ich (A1)",need:3},{n:"A2",t:"Elementar (A2)",need:6},{n:"B1",t:"O‘rta (B1)",need:8},{n:"B2",t:"O‘rta-yuqori (B2)",need:9}];
-function setMode(m){MODE=m;LV=m==="num"?LVN:LVV;CF=m==="num"?CFN:CFV;RK=m==="num"?RKN:RKV}
-function S(){if(MODE==="num")return P;return P.v=P.v||{unlocked:1,stars:{},acc:{},ok:0,all:0}}
-function tabs(){return '<div class="tabs"><button class="tab'+(MODE==="num"?' on':'')+'" data-m="num">🔢 Raqamlar</button><button class="tab'+(MODE==="num"?'':' on')+'" data-m="verb">🗣 Fe‘llar</button></div>'}
-function vstart(l){
+
+var DB,ALLX;
+var TP=["Привет|Salom~Здравствуйте|Assalomu alaykum~Доброе утро|Xayrli tong~Добрый день|Xayrli kun~Добрый вечер|Xayrli kech~Спокойной ночи|Xayrli tun~До свидания|Xayr, ko‘rishguncha~Пока|Hozircha~До завтра|Ertagacha~Как дела?|Ishlaringiz qalay?",
+"Меня зовут Али|Mening ismim Ali~Как вас зовут?|Ismingiz nima?~Очень приятно|Tanishganimdan xursandman~Я из Узбекистана|Men O‘zbekistondanman~Откуда вы?|Qayerdansiz?~Сколько вам лет?|Necha yoshdasiz?~Мне двадцать лет|Men yigirma yoshdaman~Я студент|Men talabaman~Где вы работаете?|Qayerda ishlaysiz?~Я живу в Ташкенте|Men Toshkentda yashayman",
+"Спасибо|Rahmat~Большое спасибо|Katta rahmat~Пожалуйста|Marhamat~Извините|Kechirasiz~Простите|Uzr so‘rayman~Ничего страшного|Hechqisi yo‘q~Можно?|Mumkinmi?~Конечно|Albatta~С удовольствием|Mamnuniyat bilan~Будьте добры|Marhamat qilib, mehribon bo‘ling",
+"Сколько это стоит?|Bu qancha turadi?~Это дорого|Bu qimmat~Это дёшево|Bu arzon~Покажите, пожалуйста|Iltimos, ko‘rsating~Дайте мне вот это|Menga mana buni bering~Я возьму это|Men buni olaman~У вас есть другой?|Boshqasi bormi?~Можно примерить?|Kiyib ko‘rsam bo‘ladimi?~Где касса?|Kassa qayerda?~Дайте чек, пожалуйста|Chekni bering, iltimos",
+"Где находится метро?|Metro qayerda joylashgan?~Как пройти к вокзалу?|Vokzalga qanday borsam bo‘ladi?~Прямо|To‘g‘ri~Налево|Chapga~Направо|O‘ngga~Это далеко?|Bu uzoqmi?~Это близко|Bu yaqin~Остановите здесь, пожалуйста|Shu yerda to‘xtating, iltimos~Сколько стоит билет?|Chipta qancha turadi?~Я заблудился|Men adashib qoldim",
+"Столик на двоих|Ikki kishilik stol~Меню, пожалуйста|Menyu, iltimos~Что вы порекомендуете?|Nimani tavsiya qilasiz?~Я буду чай|Men choy ichaman~Без сахара|Shakarsiz~Очень вкусно|Juda mazali~Принесите счёт|Hisobni olib keling~Я не ем мясо|Men go‘sht yemayman~Можно воды?|Suv bersangiz bo‘ladimi?~Приятного аппетита|Yoqimli ishtaha",
+"Мне плохо|Menga yomon~У меня болит голова|Boshim og‘riyapti~Вызовите врача|Shifokorni chaqiring~Мне нужна помощь|Menga yordam kerak~Где аптека?|Dorixona qayerda?~Я потерял телефон|Men telefonimni yo‘qotdim~Позвоните в полицию|Politsiyaga qo‘ng‘iroq qiling~У меня аллергия|Menda allergiya bor~Я простудился|Men shamollab qoldim~Будьте здоровы|Sog‘ bo‘ling",
+"Я не понимаю|Men tushunmayapman~Повторите, пожалуйста|Takrorlang, iltimos~Говорите медленнее|Sekinroq gapiring~Я плохо говорю по-русски|Men ruscha yomon gapiraman~Как это по-русски?|Buni ruschada qanday aytiladi?~Что это значит?|Bu nima degani?~Вы говорите по-английски?|Inglizcha gapirasizmi?~Я понял|Men tushundim~Подождите минуту|Bir daqiqa kuting~Как пишется это слово?|Bu so‘z qanday yoziladi?",
+"Который час?|Soat nechchi?~Сегодня холодно|Bugun sovuq~Завтра будет дождь|Ertaga yomg‘ir yog‘adi~Я опаздываю|Men kechikyapman~Давайте встретимся|Keling, uchrashaylik~Во сколько?|Soat nechada?~У меня нет времени|Mening vaqtim yo‘q~Я буду дома|Men uyda bo‘laman~Мне пора идти|Menga ketish vaqti bo‘ldi~Счастливого пути|Yo‘lingiz bexatar bo‘lsin"];
+var PH=[];
+TP.forEach(function(t){t.split("~").forEach(function(x){PH.push(x.split("|"))})});
+var ALLP=rng(0,PH.length-1);
+var LVP=[
+{n:"Salomlashish",d:"Привет, Здравствуйте, Как дела?",items:rng(0,9),k:4,c:20,t:15},
+{n:"Tanishuv",d:"Меня зовут… Я из…",items:rng(10,19),k:4,c:20,t:15},
+{n:"Odob va rahmat",d:"Спасибо, Извините, Конечно",items:rng(20,29),k:4,c:20,t:15},
+{n:"Do‘konda",d:"Сколько это стоит?",items:rng(30,39),k:6,c:20,t:20},
+{n:"Yo‘lda",d:"Налево, направо, прямо…",items:rng(40,49),k:6,c:20,t:20},
+{n:"Restoranda",d:"Меню, пожалуйста",items:rng(50,59),k:6,c:20,t:20},
+{n:"Sog‘liq va yordam",d:"Мне нужна помощь",items:rng(60,69),k:6,c:20,t:20},
+{n:"Tushunishmasa",d:"Повторите, пожалуйста",items:rng(70,79),k:8,c:20,t:25},
+{n:"Vaqt va rejalar",d:"Который час? Я опаздываю",items:rng(80,89),k:8,c:20,t:25},
+{n:"Gaplar ustasi",d:"Barcha 90 ta gap",all:1,items:ALLP,k:8,c:20,t:30}];
+
+var CN=["Именительный (bosh kelishik)","Родительный (qaratqich)","Дательный (jo‘nalish)","Винительный (tushum)","Творительный (vosita)","Предложный (o‘rin-payt)"];
+var CQ=["Кто? Что?","Кого? Чего?","Кому? Чему?","Кого? Что?","Кем? Чем?","О ком? О чём?"];
+var NF="книга,книги,книге,книгу,книгой,книге~стол,стола,столу,стол,столом,столе~брат,брата,брату,брата,братом,брате~сестра,сестры,сестре,сестру,сестрой,сестре~школа,школы,школе,школу,школой,школе~город,города,городу,город,городом,городе~друг,друга,другу,друга,другом,друге~мама,мамы,маме,маму,мамой,маме~окно,окна,окну,окно,окном,окне~дом,дома,дому,дом,домом,доме~ручка,ручки,ручке,ручку,ручкой,ручке~врач,врача,врачу,врача,врачом,враче".split("~").map(function(x){return x.split(",")});
+var SS="У меня нет ___|0|1|Menda kitob yo‘q~Это дом моего ___|2|1|Bu mening akamning uyi~Я иду из ___|4|1|Men maktabdan ketyapman~Здесь нет ___|7|1|Bu yerda ona yo‘q~Он живёт возле ___|5|1|U shahar yaqinida yashaydi~Я не могу без ___|6|1|Men do‘stsiz yasholmayman~Я звоню ___|3|2|Men opamga qo‘ng‘iroq qilaman~Я иду к ___|2|2|Men akamning oldiga ketyapman~Я помогаю ___|7|2|Men onamga yordam beraman~Мы гуляем по ___|5|2|Biz shahar bo‘ylab sayr qilamiz~Я дал книгу ___|6|2|Men kitobni do‘stimga berdim~Я иду к ___|11|2|Men shifokorning oldiga ketyapman~Я читаю ___|0|3|Men kitob o‘qiyapman~Я люблю ___|7|3|Men onamni yaxshi ko‘raman~Я иду в ___|4|3|Men maktabga ketyapman~Я знаю ___|3|3|Men opamni bilaman~Я жду ___|2|3|Men akamni kutyapman~Я вижу ___|9|3|Men uyni ko‘ryapman~Я пишу ___|10|4|Men ruchka bilan yozaman~Над ___ летит птица|9|4|Uy ustida qush uchyapti~Перед ___ стоит машина|8|4|Deraza oldida mashina turibdi~Он хочет стать ___|11|4|U shifokor bo‘lmoqchi~Я интересуюсь ___|0|4|Men kitoblarga qiziqaman~Между ___ и домом|4|4|Maktab va uy orasida~Я думаю о ___|7|5|Men onam haqida o‘ylayman~Книга лежит на ___|1|5|Kitob stol ustida yotibdi~Я живу в ___|5|5|Men shaharda yashayman~Мы говорим о ___|2|5|Biz akam haqida gaplashamiz~Она в ___|4|5|U maktabda~Он в ___|9|5|U uyda";
+var SN=SS.split("~").map(function(x){var a=x.split("|");return[a[0],+a[1],+a[2],a[3]]});
+var PP=[["без",1,"-siz"],["для",1,"uchun"],["у",1,"yonida"],["от",1,"-dan"],["до",1,"-gacha"],["из",1,"-dan (ichidan)"],["к",2,"-ga (tomon)"],["по",2,"bo‘ylab"],["через",3,"orqali"],["про",3,"haqida"],["над",4,"ustida"],["под",4,"ostida"],["перед",4,"oldida"],["о",5,"haqida"],["при",5,"huzurida"]];
+var LVG=[
+{n:"Названия падежей",d:"Кого? Чего? → Родительный",ty:"cn",items:rng(0,5),k:4,c:12,t:12},
+{n:"Предлоги",d:"без, к, над, о…",ty:"pp",items:rng(0,14),k:4,c:20,t:12},
+{n:"Родительный и дательный",d:"У меня нет книги, Я иду к брату",ty:"fill",items:rng(0,11),k:4,c:20,t:15},
+{n:"Винительный и творительный",d:"Я читаю книгу, Я пишу ручкой",ty:"fill",items:rng(12,23),k:5,c:20,t:15},
+{n:"Винительный, творительный, предложный",d:"Я живу в городе…",ty:"fill",items:rng(12,29),k:5,c:20,t:15},
+{n:"Всё вместе",d:"Barcha 30 ta gap, 6 ta variant",ty:"fill",items:rng(0,29),k:6,c:20,t:20},
+{n:"Определи падеж I",d:"Я читаю книгу → Винительный",ty:"id",items:rng(0,29),k:4,c:20,t:15},
+{n:"Определи падеж II",d:"6 ta padej orasidan tanlang",ty:"id",items:rng(0,29),k:6,c:20,t:15}];
+var CFG=["A1","A1","A1","A2","A2","A2","B1","B2"];
+var RKG=[{n:"A0",t:"Boshlovchi (A0)",need:0},{n:"A1",t:"Boshlang‘ich (A1)",need:3},{n:"A2",t:"Elementar (A2)",need:6},{n:"B1",t:"O‘rta (B1)",need:7},{n:"B2",t:"O‘rta-yuqori (B2)",need:8}];
+var PRS="я|men~ты|sen~он|u (erkak)~она|u (ayol)~оно|u (narsa)~мы|biz~вы|siz / sizlar~они|ular~мой|mening~твой|sening~его|uning (erkak)~её|uning (ayol)~наш|bizning~ваш|sizning~их|ularning~свой|o‘zining~этот|bu~тот|u (narigi)~такой|shunday~кто|kim~что|nima~какой|qanday~чей|kimning~сколько|qancha~который|qaysi~весь|butun, hamma~кто-то|kimdir~что-то|nimadir~никто|hech kim~ничего|hech narsa~всё|hamma narsa~все|hamma (odamlar)~каждый|har bir~другой|boshqa~сам|o‘zi~любой|istalgan";
+var PRN=PRS.split("~").map(function(x){return x.split("|")});
+var ALLR=rng(0,PRN.length-1);
+var PN=["я","ты","он","она","мы","вы","они"];
+var PT=[["я","меня","мне","мной"],["ты","тебя","тебе","тобой"],["он","его","ему","им","него","нему","ним","нём"],["она","её","ей","ней","неё"],["мы","нас","нам","нами"],["вы","вас","вам","вами"],["они","их","им","ими","них","ним"]];
+var FORMS=[];PT.forEach(function(a){a.forEach(function(f){if(FORMS.indexOf(f)<0)FORMS.push(f)})});
+var SPS="Я вижу ___|2|его|Men uni ko‘ryapman~Он любит ___|0|меня|U meni yaxshi ko‘radi~У ___ есть машина|3|неё|Uning mashinasi bor~Они ждут ___|4|нас|Ular bizni kutishyapti~Я знаю ___|5|вас|Men sizni bilaman~Мы видим ___|6|их|Biz ularni ko‘ryapmiz~Здесь нет ___|1|тебя|Bu yerda sen yo‘qsan~Без ___ скучно|1|тебя|Sensiz zerikarli~Я не знаю ___|3|её|Men uni (ayolni) bilmayman~Я даю ___ книгу|3|ей|Men unga kitob beraman~Он звонит ___|0|мне|U menga qo‘ng‘iroq qiladi~Я иду к ___|2|нему|Men uning oldiga ketyapman~Она помогает ___|4|нам|U bizga yordam beradi~Я пишу ___ письмо|5|вам|Men sizga xat yozaman~Мы звоним ___|6|им|Biz ularga qo‘ng‘iroq qilamiz~Он идёт со ___|0|мной|U men bilan ketyapti~Я говорю с ___|2|ним|Men u bilan gaplashaman~Мы идём с ___|6|ними|Biz ular bilan ketyapmiz~Я доволен ___|1|тобой|Men sendan mamnunman~Он думает обо ___|0|мне|U men haqida o‘ylaydi~Мы говорим о ___|2|нём|Biz u haqida gaplashamiz~Я рассказываю о ___|3|ней|Men u haqida aytib beraman~Они говорят о ___|5|вас|Ular siz haqingizda gaplashishadi";
+var SP=SPS.split("~").map(function(x){var a=x.split("|");return[a[0],+a[1],a[2],a[3]]});
+var LVR=[
+{n:"Личные местоимения",d:"я, ты, он, она, мы, вы, они",items:rng(0,7),k:4,c:16,t:12},
+{n:"Притяжательные",d:"мой, твой, его, её, наш…",items:rng(8,15),k:4,c:16,t:12},
+{n:"Указательные и вопросительные",d:"этот, тот, кто, что, какой…",items:rng(16,25),k:5,c:20,t:15},
+{n:"Неопределённые и отрицательные",d:"кто-то, никто, всё, каждый…",items:rng(26,35),k:6,c:20,t:15},
+{n:"Личные: кого? чего?",d:"Я вижу его, Он любит меня",ty:"pf",items:rng(0,8),k:5,c:20,t:15},
+{n:"Личные: кому? кем?",d:"Я даю ей, Я иду с ним",ty:"pf",items:rng(9,18),k:6,c:20,t:15},
+{n:"Личные: все падежи",d:"Barcha shakllar aralash",ty:"pf",items:rng(0,22),k:6,c:20,t:20},
+{n:"Мастер местоимений",d:"23 ta gap, 8 ta variant",ty:"pf",items:rng(0,22),k:8,c:20,t:25}];
+function ptxt(id){return FORMS[id]}
+function pstart(l){var base=shuf(l.items),L=base.length,r=[];for(var j=0;j<l.c;j++)r.push({n:base[j%L],dir:0});return r}
+function popts(n,l,q){var s=SP[q.n],c0=FORMS.indexOf(s[2]),c=[c0],seen={};seen[s[2]]=1;
+var cand=shuf(PT[s[1]].map(function(f){return FORMS.indexOf(f)})).concat(shuf(rng(0,FORMS.length-1)));
+cand.forEach(function(x){if(c.length<l.k&&!seen[FORMS[x]]){seen[FORMS[x]]=1;c.push(x)}});return shuf(c)}
+function pfill(q){var s=SP[q.n];return s[0].replace("___",s[2])}
+function pview(q){var s=SP[q.n];return{w:"",a:"To‘g‘ri shaklni tanlang",p:'<div class="big p">'+s[0].replace("___","<u>_____</u>")+'</div><div class="hint">('+PN[s[1]]+') — '+s[3]+'</div>'}}
+function cid(q,l){if(!l.ty)return q.n;if(l.ty==="pf")return FORMS.indexOf(SP[q.n][2]);if(l.ty==="af")return AFS.indexOf(ADJ[AC[q.n][0]][AC[q.n][2]]);if(l.ty==="cn")return q.n;if(l.ty==="pp")return PP[q.n][1];var s=SN[q.n];return l.ty==="fill"?s[1]*10+s[2]:s[2]}
+function ctxt(id,l,q){if(l.ty==="fill")return NF[Math.floor(id/10)][id%10];if(l.ty==="cn"&&q.dir===1)return CQ[id];return CN[id]}
+function cstart(l){var base=shuf(l.items),L=base.length,r=[];for(var j=0;j<l.c;j++)r.push({n:base[j%L],dir:l.ty==="cn"?Math.floor(j/L)%2:0});return r}
+function copts(n,l,q){var c0=cid(q,l),c=[c0],seen={};seen[gtxt(c0,l,q)]=1,cand;
+if(l.ty!=="fill"){cand=shuf(rng(0,5).filter(function(x){return x!==c0}))}
+else{var nu=Math.floor(c0/10),cs=c0%10;cand=shuf(rng(0,5).filter(function(x){return x!==cs}).map(function(x){return nu*10+x})).concat(shuf(rng(0,11).filter(function(x){return x!==nu})).map(function(x){return x*10+Math.floor(Math.random()*6)}))}
+cand.forEach(function(x){if(c.length<l.k){var t=gtxt(x,l,q);if(!seen[t]){seen[t]=1;c.push(x)}}});
+return shuf(c)}
+function gfill(q){var s=SN[q.n];return s[0].replace("___",NF[s[1]][s[2]])}
+function cans(q,l){if(l.ty==="cn")return CQ[q.n]+' → '+CN[q.n];if(l.ty==="pp")return PP[q.n][0]+' → '+CN[PP[q.n][1]];return gfill(q)+(l.ty==="id"?' — '+CN[SN[q.n][2]]:'')}
+function cspeak(q,l){if(l.ty==="cn")return"";if(l.ty==="pp")return PP[q.n][0];return gfill(q)}
+function cview(q,l){var t=l.ty;
+if(t==="cn")return q.dir===0?{w:"",a:"Bu qaysi padej?",p:'<div class="big w">'+CQ[q.n]+'</div>'}:{w:"",a:"Bu padej qaysi savollarga javob beradi?",p:'<div class="big p">'+CN[q.n]+'</div>'};
+if(t==="pp")return{w:PP[q.n][0],a:"Bu predlog qaysi padej bilan keladi?",p:'<div class="big w">«'+PP[q.n][0]+'» + …</div><div class="hint">'+PP[q.n][2]+'</div>'};
+var s=SN[q.n];
+if(t==="fill")return{w:"",a:"To‘g‘ri shaklni tanlang",p:'<div class="big p">'+s[0].replace("___","<u>_____</u>")+'</div><div class="hint">('+NF[s[1]][0]+') — '+s[3]+'</div>'};
+return{w:gfill(q),a:"Qalin yozilgan so‘z qaysi padejda?",p:'<div class="big p">'+s[0].replace("___","<b>"+NF[s[1]][s[2]]+"</b>")+'</div><div class="hint">'+s[3]+'</div><button class="say" id="sp">🔊 Tinglash</button>'}}
+
+function gtxt(id,l,q){return l.ty==="pf"?ptxt(id):l.ty==="af"?qtxt(id):ctxt(id,l,q)}
+function gstart(l){return l.ty==="pf"?pstart(l):l.ty==="af"?qstart(l):cstart(l)}
+function gopts(n,l,q){return l.ty==="pf"?popts(n,l,q):l.ty==="af"?qopts(n,l,q):copts(n,l,q)}
+function gans(q,l){return l.ty==="pf"?pfill(q):l.ty==="af"?qans(q):cans(q,l)}
+function gspeak(q,l){return l.ty==="pf"?pfill(q):l.ty==="af"?qfull(q):cspeak(q,l)}
+function gview(q,l){return l.ty==="pf"?pview(q):l.ty==="af"?qview(q):cview(q,l)}
+var CMS="Новая машина|Yangi mashina~Старый дом|Eski uy~Большой город|Katta shahar~Маленькая комната|Kichkina xona~Красивое платье|Chiroyli ko‘ylak~Хороший друг|Yaxshi do‘st~Новая книга|Yangi kitob~Белый снег|Oq qor~Чёрный кот|Qora mushuk~Красный цветок|Qizil gul~Умный человек|Aqlli inson~Свежий воздух|Toza havo~Длинная улица|Uzun ko‘cha~Тёмная ночь|Qorong‘i tun~Светлое будущее|Yorug‘ kelajak~Сладкий чай|Shirin choy~Чистая вода|Toza suv~Тёплый дом|Issiq uy~Глубокое озеро|Chuqur ko‘l~Интересная книга|Qiziqarli kitob~Добрый человек|Mehribon inson~Красивый город|Chiroyli shahar~Дорогая одежда|Qimmat kiyim~Холодное молоко|Sovuq sut~Вкусный хлеб|Mazali non~Высокая гора|Baland tog‘~Быстрая машина|Tez mashina~Тихая музыка|Sokin musiqa~Яркое солнце|Yorqin quyosh~Тяжёлая работа|Og‘ir ish~Очень красивая девушка|Juda chiroyli qiz~Старая добрая сказка|Eski yaxshi ertak~Новый учебный год|Yangi o‘quv yili~Большой красивый дом|Katta chiroyli uy~Тёплое летнее утро|Iliq yoz ertasi~Интересная новая книга|Qiziqarli yangi kitob~Холодная зимняя ночь|Sovuq qish kechasi~Маленький уютный город|Kichkina shinam shahar~Вкусный домашний обед|Mazali uy ovqati~Свежий утренний воздух|Toza ertalabki havo";
+var CMB=CMS.split("~").map(function(x){return x.split("|")});
+var ALLB=rng(0,CMB.length-1);
+var ADJS="новый,новая,новое,новые|yangi~старый,старая,старое,старые|eski~красивый,красивая,красивое,красивые|chiroyli~добрый,добрая,доброе,добрые|mehribon~умный,умная,умное,умные|aqlli~чистый,чистая,чистое,чистые|toza~сладкий,сладкая,сладкое,сладкие|shirin~холодный,холодная,холодное,холодные|sovuq~тёплый,тёплая,тёплое,тёплые|issiq~тёмный,тёмная,тёмное,тёмные|qorong‘i~большой,большая,большое,большие|katta~хороший,хорошая,хорошее,хорошие|yaxshi~русский,русская,русское,русские|rus~свежий,свежая,свежее,свежие|toza (yangi)~синий,синяя,синее,синие|ko‘k~глубокий,глубокая,глубокое,глубокие|chuqur~высокий,высокая,высокое,высокие|baland~интересный,интересная,интересное,интересные|qiziqarli~длинный,длинная,длинное,длинные|uzun~светлый,светлая,светлое,светлые|yorug‘";
+var ADJ=ADJS.split("~").map(function(x){var a=x.split("|"),f=a[0].split(",");f.push(a[1]);return f});
+var AFS=[];ADJ.forEach(function(a){for(var i=0;i<4;i++)if(AFS.indexOf(a[i])<0)AFS.push(a[i])});
+var ACS="0|машина|1|mashina~1|дом|0|uy~2|город|0|shahar~3|человек|0|inson~4|человек|0|inson~5|вода|1|suv~6|чай|0|choy~7|молоко|2|sut~8|дом|0|uy~9|ночь|1|tun~10|город|0|shahar~11|друг|0|do‘st~12|язык|0|til~13|воздух|0|havo~14|небо|2|osmon~15|озеро|2|ko‘l~16|гора|1|tog‘~17|книга|1|kitob~18|улица|1|ko‘cha~19|будущее|2|kelajak";
+var AC=ACS.split("~").map(function(x){var a=x.split("|");return[+a[0],a[1],+a[2],a[3]]});
+var LVB=[
+{n:"Простые сочетания",d:"Новая машина, Старый дом",items:rng(0,9),k:4,c:20,t:12},
+{n:"Прилагательное + существительное",d:"Умный человек, Свежий воздух",items:rng(10,19),k:4,c:20,t:12},
+{n:"Больше сочетаний",d:"Добрый человек, Дорогая одежда",items:rng(20,29),k:5,c:20,t:15},
+{n:"Согласование I",d:"новый → ___ машина",ty:"af",items:rng(0,9),k:4,c:20,t:15},
+{n:"Согласование II",d:"большой, русский, синий…",ty:"af",items:rng(10,19),k:5,c:20,t:15},
+{n:"Согласование: всё вместе",d:"Sifat shaklini to‘g‘ri tanlang",ty:"af",items:rng(0,19),k:6,c:20,t:20},
+{n:"Длинные сочетания",d:"Очень красивая девушка",items:rng(30,39),k:6,c:20,t:20},
+{n:"Мастер словосочетаний",d:"Barcha 40 ta birikma, 8 ta variant",all:1,items:ALLB,k:8,c:20,t:25}];
+function qtxt(id){return AFS[id]}
+function qstart(l){var base=shuf(l.items),L=base.length,r=[];for(var j=0;j<l.c;j++)r.push({n:base[j%L],dir:0});return r}
+function qopts(n,l,q){var a=AC[q.n],c0=AFS.indexOf(ADJ[a[0]][a[2]]),c=[c0],seen={};seen[AFS[c0]]=1;
+var cand=shuf([0,1,2,3].map(function(i){return AFS.indexOf(ADJ[a[0]][i])})).concat(shuf(rng(0,AFS.length-1)));
+cand.forEach(function(x){if(c.length<l.k&&!seen[AFS[x]]){seen[AFS[x]]=1;c.push(x)}});return shuf(c)}
+function qfull(q){var a=AC[q.n];return ADJ[a[0]][a[2]]+' '+a[1]}
+function qans(q){var a=AC[q.n];return qfull(q)+' — '+ADJ[a[0]][4]+' '+a[3]}
+function qview(q){var a=AC[q.n];return{w:"",a:"To‘g‘ri shaklni tanlang",p:'<div class="big w">___ '+a[1]+'</div><div class="hint">('+ADJ[a[0]][0]+') — '+ADJ[a[0]][4]+' '+a[3]+'</div>'}}
+function setMode(m){MODE=m;LV=({num:LVN,verb:LVV,phr:LVP,gen:LVG,pro:LVR,cmb:LVB})[m];CF=({num:CFN,verb:CFV,phr:CFN,gen:CFG,pro:CFG,cmb:CFG})[m];RK=({num:RKN,verb:RKV,phr:RKN,gen:RKG,pro:RKG,cmb:RKG})[m];DB=({phr:PH,pro:PRN,cmb:CMB})[m]||VB;ALLX=({phr:ALLP,pro:ALLR,cmb:ALLB})[m]||ALLI}
+function S(){if(MODE==="num")return P;var k={verb:"v",phr:"ph",gen:"cs",pro:"pn",cmb:"cb"}[MODE];return P[k]=P[k]||{unlocked:1,stars:{},acc:{},ok:0,all:0}}
+function tabs(){var T=[["num","🔢 Raqamlar"],["verb","🗣 Fe‘llar"],["phr","💬 Gaplar"],["gen","📚 Падежи"],["pro","👤 Местоимения"],["cmb","🧩 Словосочетания"]];return '<div class="tabs">'+T.map(function(x){return '<button class="tab'+(MODE===x[0]?' on':'')+'" data-m="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div>'}
+function vstart(l){if(l.ty)return gstart(l);
 if(l.conj){var all=[];l.items.forEach(function(v){for(var p=0;p<6;p++)all.push(v*6+p)});return shuf(all).slice(0,l.c).map(function(n){return{n:n,dir:0}})}
 var base=l.all?shuf(l.items).slice(0,l.c):shuf(l.items),L=base.length,r=[];
 for(var j=0;j<l.c;j++)r.push({n:base[j%L],dir:l.all?(Math.random()<.5?0:1):Math.floor(j/L)%2});
 return r}
-function vtxt(id,q,l){if(l.conj)return form(Math.floor(id/6),id%6);return VB[id][q.dir===0?1:0]}
+function vtxt(id,q,l){if(l.ty)return gtxt(id,l,q);if(l.conj)return form(Math.floor(id/6),id%6);return DB[id][q.dir===0?1:0]}
 function otxt(x,q,l){return MODE==="num"?(q.dir===0?ru(x):fmt(x)):vtxt(x,q,l)}
-function atxt(q,l){if(MODE==="num")return fmt(q.n)+' — '+ru(q.n);if(l.conj){var vi=Math.floor(q.n/6),p=q.n%6;return PR[p]+' '+form(vi,p)+' ('+VB[vi][0]+')'}return VB[q.n][0]+' — '+VB[q.n][1]}
-function stext(q,l){if(MODE==="num")return ru(q.n);if(l.conj){var p=q.n%6;return PR[p].split(" ")[0]+" "+form(Math.floor(q.n/6),p)}return VB[q.n][0]}
+function atxt(q,l){if(l.ty)return gans(q,l);if(MODE==="num")return fmt(q.n)+' — '+ru(q.n);if(l.conj){var vi=Math.floor(q.n/6),p=q.n%6;return PR[p]+' '+form(vi,p)+' ('+VB[vi][0]+')'}return DB[q.n][0]+' — '+DB[q.n][1]}
+function stext(q,l){if(l.ty)return gspeak(q,l);if(MODE==="num")return ru(q.n);if(l.conj){var p=q.n%6;return PR[p].split(" ")[0]+" "+form(Math.floor(q.n/6),p)}return DB[q.n][0]}
 function opts(n,l,q){
-if(MODE==="num")return nopts(n,l);
+if(MODE==="num")return nopts(n,l);if(l.ty)return gopts(n,l,q);
 var c=[n],seen={};seen[vtxt(n,q,l)]=1,cand=[];
 if(l.conj){var vi=Math.floor(n/6),p=n%6;for(var j=0;j<6;j++)if(j!==p)cand.push(vi*6+j);shuf(l.items).forEach(function(x){if(x!==vi)cand.push(x*6+p)})}
-else{cand=shuf(l.items).concat(shuf(ALLI))}
+else{cand=shuf(l.items).concat(shuf(ALLX))}
 cand.forEach(function(x){if(c.length<l.k){var t=vtxt(x,q,l);if(!seen[t]){seen[t]=1;c.push(x)}}});
 return shuf(c)}
-function view(q,l){
+function view(q,l){if(l.ty)return gview(q,l);
 if(MODE==="num"){var w=ru(q.n);return{w:w,a:q.dir===0?'Ruscha qanday aytiladi?':'Bu qaysi raqam?',p:q.dir===0?'<div class="big">'+fmt(q.n)+'</div>':'<div class="big w">'+w+'</div><button class="say" id="sp">🔊 Tinglash</button>'}}
 if(l.conj){var vi=Math.floor(q.n/6),p=q.n%6;return{w:"",a:"To‘g‘ri shaklni tanlang",p:'<div class="big w">'+PR[p]+' ___</div><div class="hint">'+VB[vi][0]+' — '+VB[vi][1]+'</div>'}}
-var v=VB[q.n];
-return q.dir===0?{w:v[0],a:"Ma‘nosi nima?",p:'<div class="big w">'+v[0]+'</div><button class="say" id="sp">🔊 Tinglash</button>'}:{w:"",a:"Ruscha qanday aytiladi?",p:'<div class="big w">'+v[1]+'</div>'}}
+var v=DB[q.n],cl=MODE==="phr"||MODE==="cmb"?"p":"w";
+return q.dir===0?{w:v[0],a:"Ma‘nosi nima?",p:'<div class="big '+cl+'">'+v[0]+'</div><button class="say" id="sp">🔊 Tinglash</button>'}:{w:"",a:"Ruscha qanday aytiladi?",p:'<div class="big '+cl+'">'+v[1]+'</div>'}}
 setMode("num");
 home();
 </script>
